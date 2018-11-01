@@ -52,7 +52,7 @@
   color: #4CAF50;
   text-decoration: none;
 }
-.form .register-form {
+.form .login-form {
   display: none;
 }
 .container {
@@ -64,6 +64,7 @@
 .container:before, .container:after {
   content: "";
   display: block;
+  clear: both;
 }
 .container .info {
   margin: 50px auto;
