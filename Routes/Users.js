@@ -45,6 +45,7 @@ users.post('/register', function (req, res) {
                                 appData.code = 0;
                                 appData.message = "User Registered successfully!";
                                 res.status(200).json(appData);
+                                
                             } else {
                                 console.log("error:"+err.sqlMessage)
                                 appData.code = 1;
