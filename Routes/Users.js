@@ -29,16 +29,30 @@ users.post('/register', function (req, res) {
             appData.message = "Internal Server Error";
             res.status(500).json(appData);
         } else {
-            connection.query('INSERT INTO users SET ?', userData, function (err, rows, fields) {
-                if (!err) {
-                    appData.code = 0;
-                    appData.message = "User Registered successfully!";
-                    res.status(200).json(appData);
-                } else {
-                    console.log("error:"+err.sqlMessage)
+            connection.query("SELECT * FROM users WHERE email = ?", [userData.email], function (err, rows, fields) {
+                if (err) {
                     appData.code = 1;
-                    appData.message = "Error Occured! ";
+                    appData.message = "Error Occurred!";
                     res.status(400).json(appData);
+                }else{
+                    if (rows.length > 0) {
+                        appData.code = 1;
+                        appData.message = "This user already exist!";
+                        res.status(200).json(appData);
+                    }else{
+                        connection.query('INSERT INTO users SET ?', userData, function (err, rows, fields) {
+                            if (!err) {
+                                appData.code = 0;
+                                appData.message = "User Registered successfully!";
+                                res.status(200).json(appData);
+                            } else {
+                                console.log("error:"+err.sqlMessage)
+                                appData.code = 1;
+                                appData.message = "Error Occured! ";
+                                res.status(400).json(appData);
+                            }
+                        });
+                    }
                 }
             });
             connection.release();
@@ -47,10 +61,7 @@ users.post('/register', function (req, res) {
 });
 
 users.post('/login', function (req, res) {
-    var appData = {
-        "code": 1,
-        "data": ""
-    }
+    var appData = {}
 
     var userData = {
         "email": req.body.email,
@@ -76,18 +87,23 @@ users.post('/login', function (req, res) {
                             });
                             appData.code = 0;
                             appData.message = "Success";
-                            appData["token"] = token;
+                            var tokenData ={};
+                            tokenData.token = token;
+                            tokenData.isActive = (rows[0].isActive == 1);
+                            tokenData.isDeleted = (rows[0].isDeleted == 1);
+                            appData.data = tokenData;
+
                             res.status(200).json(appData);
                         }
                         else {
                             appData.code = 1;
                             appData.message = "Email or password do not match";
-                            res.status(204).json(appData);
+                            res.status(200).json(appData);
                         }
                     } else {
                         appData.code = 1;
                         appData.message = "Email does not exists!";
-                        res.status(204).json(appData);
+                        res.status(200).json(appData);
                     }
                 }
             });
