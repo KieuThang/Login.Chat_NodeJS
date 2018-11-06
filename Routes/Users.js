@@ -34,20 +34,35 @@ users.post('/register', function (req, res) {
                     appData.code = 1;
                     appData.message = "Error Occurred!";
                     res.status(400).json(appData);
-                }else{
+                } else {
                     if (rows.length > 0) {
                         appData.code = 1;
                         appData.message = "This user already exist!";
                         res.status(200).json(appData);
-                    }else{
+                    } else {
                         connection.query('INSERT INTO users SET ?', userData, function (err, rows, fields) {
                             if (!err) {
-                                appData.code = 0;
-                                appData.message = "User Registered successfully!";
-                                res.status(200).json(appData);
-                                
+                                connection.query("SELECT * FROM users WHERE email = ?", [userData.email], function (err, rows, fields) {
+                                    if (err) {
+                                        appData.code = 1;
+                                        appData.message = "Error Occurred!";
+                                        res.status(400).json(appData);
+                                    } else {
+                                        appData.code = 0;
+                                        appData.message = "User Registered successfully!";
+                                        var tokenData = {};
+                                        token = jwt.sign(rows[0], process.env.SECRET_KEY, {
+                                            expiresIn: 5000
+                                        });
+                                        tokenData.token = token;
+                                        tokenData.isActive = (rows[0].isActive == 1);
+                                        tokenData.isDeleted = (rows[0].isDeleted == 1);
+                                        appData.data = tokenData;
+                                        res.status(200).json(appData);
+                                    }
+                                });
                             } else {
-                                console.log("error:"+err.sqlMessage)
+                                console.log("error:" + err.sqlMessage)
                                 appData.code = 1;
                                 appData.message = "Error Occured! ";
                                 res.status(400).json(appData);
@@ -88,7 +103,7 @@ users.post('/login', function (req, res) {
                             });
                             appData.code = 0;
                             appData.message = "Success";
-                            var tokenData ={};
+                            var tokenData = {};
                             tokenData.token = token;
                             tokenData.isActive = (rows[0].isActive == 1);
                             tokenData.isDeleted = (rows[0].isDeleted == 1);
