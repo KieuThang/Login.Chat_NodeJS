@@ -31,6 +31,7 @@ app.get('/', function (req, res) {
 
 var usernames = {};
 var numOfUsers = {};
+var numUserJoined = 0;
 
 app.get('/login', function (req, res) {
     res.sendFile(__dirname + "/public/login/" + "login.html");
@@ -54,7 +55,8 @@ io.on('connection', function (socket) {
         var data = { username: "" + obj.username, message: "" + obj.message };
         socket.broadcast.to(socket.room).emit('server__sent_message', data);
 
-        Chats.sendMessage(data)
+        var chats = require('./Routes/Chats')
+        chats.sendMessage(data)
     });
 
     socket.on('client__login', function (username, room) {
@@ -97,6 +99,6 @@ io.on('connection', function (socket) {
     });
 });
 
-app.listen(port, function () {
+http.listen(port, function () {
     console.log("Server is running on port: " + port);
 });

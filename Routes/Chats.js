@@ -56,12 +56,35 @@ chats.get('/getChatHistory', function (req, res) {
     });
 });
 
-module.exports = {
-    sendMessage: function (req) {
-        var userName = req.userName
-        var mesaage = req.message
-        console.log("username:"+userName+", message:"+mesaage)
-    }
+var sendMessage = function sendMessage(req) {
+    var username = req.username
+    var mesaage = req.message
+    var appData = {};
+    console.log("username:" + username + ", message:" + mesaage)
+    database.connection.getConnection(function (err, connection) {
+        if (err) {
+            appData.code = 1;
+            appData.message = "Internal Server Error!";
+            console.log(appData);
+        } else {
+            appData.code = 1;
+            appData.message = "Insert message to DB";
+            console.log(appData);
+            // connection.query('SELECT * FROM messages where roomId', roomId, function (err, rows, fields) {
+            //     if (err) {
+            //         appData.code = 1;
+            //         appData.message = "No data found";
+            //         res.status(200).json(appData);
+            //     } else {
+            //         appData.code = 0;
+            //         appData.message = "Success";
+            //         appData.data = rows;
+            //         res.status(200).json(appData);
+            //     }
+            // });
+            // connection.release();
+        }
+    });
 };
 
 chats.get('/sendMessage', function (req, res) {
@@ -110,3 +133,4 @@ chats.get('/sendMessage', function (req, res) {
 });
 
 module.exports = chats
+module.exports.sendMessage = sendMessage
