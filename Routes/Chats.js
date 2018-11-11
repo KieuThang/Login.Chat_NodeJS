@@ -56,33 +56,37 @@ chats.get('/getChatHistory', function (req, res) {
     });
 });
 
-var sendMessage = function sendMessage(req) {
-    var username = req.username
-    var mesaage = req.message
-    var appData = {};
-    console.log("username:" + username + ", message:" + mesaage)
+var sendMessage = function sendMessage(msg) {
+    var appData = {}
+    const message = JSON.parse(msg);
+    var messageData = {};
+    var today = new Date();
+    messageData.message = message.message
+    messageData.roomId = message.roomId
+    messageData.roomName = message.roomName
+    messageData.sentById = message.sentById
+    messageData.sentByName = message.sentByName
+    messageData.sentOn = today
+    console.log('client__sent_message:' + msg+", message req:"+message.message+", message 2:"+messageData.message);
+    console.log(" message:" + message.message)
     database.connection.getConnection(function (err, connection) {
         if (err) {
             appData.code = 1;
             appData.message = "Internal Server Error!";
             console.log(appData);
         } else {
-            appData.code = 1;
-            appData.message = "Insert message to DB";
-            console.log(appData);
-            // connection.query('SELECT * FROM messages where roomId', roomId, function (err, rows, fields) {
-            //     if (err) {
-            //         appData.code = 1;
-            //         appData.message = "No data found";
-            //         res.status(200).json(appData);
-            //     } else {
-            //         appData.code = 0;
-            //         appData.message = "Success";
-            //         appData.data = rows;
-            //         res.status(200).json(appData);
-            //     }
-            // });
-            // connection.release();
+            connection.query('INSERT INTO messages SET ?', messageData, function (err, rows, fields) {
+                if (!err) {
+                    appData.code = 0;
+                    appData.message = "Insert message to DB";
+                    console.log(appData);
+                } else {
+                    appData.code = 1;
+                    appData.message = "Error Occurred! " + err;
+                    console.log(appData);
+                }
+            });
+            connection.release();
         }
     });
 };

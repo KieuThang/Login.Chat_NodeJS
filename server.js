@@ -50,13 +50,11 @@ io.on('connection', function (socket) {
     });
 
     socket.on('client__sent_message', function (msg) {
-        console.log('client__sent_message:' + msg);
-        var obj = JSON.parse(msg);
-        var data = { username: "" + obj.username, message: "" + obj.message };
-        socket.broadcast.to(socket.room).emit('server__sent_message', data);
-
+        const message = JSON.parse(msg);
+        console.log("socket.room:"+message.roomName)
+        socket.broadcast.to(socket.room).emit('server__sent_message', msg);
         var chats = require('./Routes/Chats')
-        chats.sendMessage(data)
+        chats.sendMessage(msg)
     });
 
     socket.on('client__login', function (username, room) {
