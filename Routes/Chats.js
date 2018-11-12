@@ -66,7 +66,7 @@ var sendMessage = function sendMessage(msg) {
     messageData.roomName = message.roomName
     messageData.sentById = message.sentById
     messageData.sentByName = message.sentByName
-    messageData.sentOn = today
+    messageData.sentOn = message.sentOn
     console.log('client__sent_message:' + msg+", message req:"+message.message+", message 2:"+messageData.message);
     console.log(" message:" + message.message)
     database.connection.getConnection(function (err, connection) {

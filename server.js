@@ -52,7 +52,7 @@ io.on('connection', function (socket) {
     socket.on('client__sent_message', function (msg) {
         const message = JSON.parse(msg);
         console.log("socket.room:"+message.roomName)
-        socket.broadcast.to(socket.room).emit('server__sent_message', msg);
+        io.in(socket.room).emit('server__sent_message', msg);
         var chats = require('./Routes/Chats')
         chats.sendMessage(msg)
     });
@@ -80,14 +80,14 @@ io.on('connection', function (socket) {
 
     socket.on('client__typing', function (msg) {
         console.log('server__user_typing:' + msg);
-        var data = { username: "" + msg };
-        socket.broadcast.to(socket.room).emit('server__user_typing', data);
+        //var data = { username: "" + msg };
+        socket.broadcast.to(socket.room).emit('server__user_typing', msg);
     });
 
     socket.on('client__stop_typing', function (msg) {
         console.log('client__stop_typing :' + msg);
-        var data = { username: "" + msg };
-        socket.broadcast.to(socket.room).emit('server__user_stop_typing', data);
+        //var data = { username: "" + msg };
+        socket.broadcast.to(socket.room).emit('server__user_stop_typing', msg);
     });
 
     socket.on('client__add_user', function (msg) {
