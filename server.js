@@ -30,7 +30,6 @@ app.get('/', function (req, res) {
 })
 
 var usernames = {};
-var numOfUsers = {};
 var numUserJoined = 0;
 
 app.get('/login', function (req, res) {
@@ -51,41 +50,33 @@ io.on('connection', function (socket) {
 
     socket.on('client__sent_message', function (msg) {
         const message = JSON.parse(msg);
-        console.log("socket.room:"+message.roomName)
+        console.log("socket.room:" + message.roomName)
         io.in(socket.room).emit('server__sent_message', msg);
         var chats = require('./Routes/Chats')
         chats.sendMessage(msg)
     });
 
-    socket.on('client__login', function (username, room) {
-        console.log('user request login:' + username + ", num:" + numUserJoined + ",room:" + room);
+    socket.on('client__login', function (username, userId, room) {
         numUserJoined += 1;
-        // store the username in the socket session for this client
         socket.username = username;
-
-        // store the room name in the socket session for this client
         socket.room = room;
-        // add the client's username to the global list
         usernames[username] = username;
-        // send client to room 1
         socket.join(room);
 
-        var data = { numUsers: numUserJoined, username: "" + username, room: room };
-        // echo to client they've connected
-        socket.emit('server__join_room_welcome', data);
-        // echo to room 1 that a person has connected to their room
-        var data = { numUsers: numUserJoined, username: "" + username };
-        socket.broadcast.to(room).emit('server__update_room', data);
+        console.log("Username: " + username + "," + userId + " want to connect room: " + room + ",===>" + usernames)
+        var data = { userId: userId, username: "" + username, room: room };
+
+        io.in(room).emit('server__user_joined', data);
     });
 
     socket.on('client__typing', function (msg) {
-        console.log('server__user_typing:' + msg);
+        //console.log('server__user_typing:' + msg);
         //var data = { username: "" + msg };
         socket.broadcast.to(socket.room).emit('server__user_typing', msg);
     });
 
     socket.on('client__stop_typing', function (msg) {
-        console.log('client__stop_typing :' + msg);
+        // console.log('client__stop_typing :' + msg);
         //var data = { username: "" + msg };
         socket.broadcast.to(socket.room).emit('server__user_stop_typing', msg);
     });
