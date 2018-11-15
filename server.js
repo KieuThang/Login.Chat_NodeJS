@@ -44,7 +44,7 @@ io.on('connection', function (socket) {
         console.log('user disconnected:' + socket.id);
 
         numUserJoined -= 1;
-        var data = { numUsers: numUserJoined, username: "" + socket.username };
+        var data = {socketId: socket.id };
         socket.broadcast.to(socket.room).emit("server__user_left", data);
     });
 
@@ -56,17 +56,30 @@ io.on('connection', function (socket) {
         chats.sendMessage(msg)
     });
 
+    socket.on('client__show_my_hand', function (username, userId, room) {
+        var data = { userId: userId, username: "" + username, room: room, socketId: socket.id };
+        io.in(room).emit('server__user_joined', data);
+    });
+
     socket.on('client__login', function (username, userId, room) {
         numUserJoined += 1;
-        socket.username = username;
+        socket.username = username + ";" + userId;
         socket.room = room;
-        usernames[username] = username;
+
         socket.join(room);
 
-        console.log("Username: " + username + "," + userId + " want to connect room: " + room + ",===>" + usernames)
-        var data = { userId: userId, username: "" + username, room: room };
+        console.log("Username: " + username + "," + userId + " want to connect room: " + room + ",===>" + socket.id)
+        var data = { userId: userId, username: "" + username, room: room, socketId: socket.id };
 
-        io.in(room).emit('server__user_joined', data);
+
+        var connectedUsers = Object.keys(io.sockets.connected).map(function (socketId) {
+            return { socket_id: socketId, socket_username: io.sockets.connected[socketId].username };
+        });
+
+        // test
+        console.log(connectedUsers);
+        console.log("data:" + socket.username);
+        io.in(room).emit('server__show_your_hand_up', data);
     });
 
     socket.on('client__typing', function (msg) {
