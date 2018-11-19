@@ -1,4 +1,6 @@
-$(function() {
+$(function () {
+  console.log("accessToken:" + localStorage.accessToken);
+  $.get('/rooms/getRooms', )
   var FADE_TIME = 150; // ms
   var TYPING_TIMER_LENGTH = 400; // ms
   var COLORS = [
@@ -69,7 +71,7 @@ $(function() {
   }
 
   // Log a message
-    const log = (message, options) => {
+  const log = (message, options) => {
     var $el = $('<li>').addClass('log').text(message);
     addMessageElement($el, options);
   }
@@ -181,7 +183,7 @@ $(function() {
     // Compute hash code
     var hash = 7;
     for (var i = 0; i < username.length; i++) {
-       hash = username.charCodeAt(i) + (hash << 5) - hash;
+      hash = username.charCodeAt(i) + (hash << 5) - hash;
     }
     // Calculate color
     var index = Math.abs(hash % COLORS.length);

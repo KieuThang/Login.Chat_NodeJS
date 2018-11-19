@@ -3,7 +3,7 @@
 
 <head>
 
-  <title>Javascript Login Form Validation</title>
+  <title>Socket Chat Web Login Portal</title>
   <!-- Include CSS File Here -->
   <link rel="stylesheet" href="login_style.css" />
 
@@ -12,15 +12,16 @@
 <div class="login-page">
   <div class="form">
     <form class="register-form">
-      <input type="text" placeholder="name" />
-      <input type="password" placeholder="password"  name="password"/>
-      <input type="text" placeholder="email address" />
+      <input type="text" placeholder="First name" id="first_name" />
+      <input type="text" placeholder="Last name" id="last_name" />
+      <input type="text" placeholder="Email address" id="email" />
+      <input type="password" placeholder="Password" id="password" />
       <button type="submit">create</button>
-      <p class="message">Already registered? <a href="#">Sign In</a></p>
+      <p class="message" onclick="onRedirectLoginPage()">Already has account?<a href="#">Login</a></p>
     </form>
     <form class="login-form">
-      <input type="text" placeholder="Email address" id="email"/>
-      <input type="password" placeholder="Password" id="password"/>
+      <input type="text" placeholder="Email address" id="email_login"/>
+      <input type="password" placeholder="Password" id="password_login"/>
       <button type="submit">login</button>
       <p class="message" onclick="onRedirectRegisterPage()">Not registered? <a href="#">Create an account</a></p>
     </form>
