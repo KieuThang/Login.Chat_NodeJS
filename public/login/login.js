@@ -29,7 +29,7 @@ $(function () {
 
             localStorage.accessToken = JSON.stringify(data);
             window.event.returnValue = false;
-          
+            console.log(localStorage.accessToken);
             window.event.returnValue = false;
             window.location.href = "/main/index.html";
         });

@@ -1,6 +1,20 @@
 $(function () {
-  console.log("accessToken:" + localStorage.accessToken);
-  $.get('/rooms/getRooms', )
+  var accessToken = JSON.parse(localStorage.accessToken);
+  console.log("accessToken:" + localStorage.accessToken+", token:"+accessToken.data.token);
+  $.ajax({
+    url: '/rooms/getRooms',
+    type: 'get',
+    beforeSend: function(request) {
+      request.setRequestHeader("token", accessToken.data.token);
+    },
+    headers: {
+      "token": accessToken.data.token
+    },
+    dataType: 'json',
+    success: function (data) {
+      console.info("data:::===>" + JSON.stringify(data));
+    }
+  });
   var FADE_TIME = 150; // ms
   var TYPING_TIMER_LENGTH = 400; // ms
   var COLORS = [
@@ -15,7 +29,7 @@ $(function () {
   var $messages = $('.messages'); // Messages area
   var $inputMessage = $('.inputMessage'); // Input message input box
 
-  var $loginPage = $('.login.page'); // The login page
+  var $loginPage = $('.room.page'); // The login page
   var $chatPage = $('.chat.page'); // The chatroom page
 
   // Prompt for setting a username
@@ -40,7 +54,7 @@ $(function () {
   // Sets the client's username
   const setUsername = () => {
     username = cleanInput($usernameInput.val().trim());
-
+    
     // If the username is valid
     if (username) {
       $loginPage.fadeOut();
