@@ -13,6 +13,22 @@ $(function () {
     dataType: 'json',
     success: function (data) {
       console.info("data:::===>" + JSON.stringify(data));
+      updateRoomList(data.data);
+    }
+  });
+  $.ajax({
+    url: '/users/getProfile',
+    type: 'get',
+    beforeSend: function(request) {
+      request.setRequestHeader("token", accessToken.data.token);
+    },
+    headers: {
+      "token": accessToken.data.token
+    },
+    dataType: 'json',
+    success: function (data) {
+      console.info("getProfileData:::===>" + JSON.stringify(data));
+      localStorage.userData = JSON.stringify(data);
     }
   });
   var FADE_TIME = 150; // ms
@@ -29,8 +45,9 @@ $(function () {
   var $messages = $('.messages'); // Messages area
   var $inputMessage = $('.inputMessage'); // Input message input box
 
-  var $loginPage = $('.room.page'); // The login page
+  var $roomPage = $('.room.page'); // The login page
   var $chatPage = $('.chat.page'); // The chatroom page
+  var $form = $('.form');
 
   // Prompt for setting a username
   var username;
@@ -40,6 +57,11 @@ $(function () {
   var $currentInput = $usernameInput.focus();
 
   var socket = io();
+
+  $('.room page').on('submit', function (event) {
+    event.preventDefault();
+    console.log("Click to join room");
+  });
 
   const addParticipantsMessage = (data) => {
     var message = '';
@@ -57,9 +79,9 @@ $(function () {
     
     // If the username is valid
     if (username) {
-      $loginPage.fadeOut();
+      $roomPage.fadeOut();
       $chatPage.show();
-      $loginPage.off('click');
+      $roomPage.off('click');
       $currentInput = $inputMessage.focus();
 
       // Tell the server your username
@@ -205,7 +227,6 @@ $(function () {
   }
 
   // Keyboard events
-
   $window.keydown(event => {
     // Auto-focus the current input when a key is typed
     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
@@ -225,13 +246,6 @@ $(function () {
 
   $inputMessage.on('input', () => {
     updateTyping();
-  });
-
-  // Click events
-
-  // Focus input when clicking anywhere on login page
-  $loginPage.click(() => {
-    $currentInput.focus();
   });
 
   // Focus input when clicking on the message input's border
@@ -296,3 +310,13 @@ $(function () {
   });
 
 });
+
+//modify the majors' dropdown
+function updateRoomList(data) { 
+  $("#roomList").empty();//remove all previous majors
+  for(i = 0;i<data.length;i++){ 
+      $("#roomList").append(//add in an option for each major
+          $("<option></option>").attr("value", data[i].id).text(data[i].name)
+      );
+  }
+};

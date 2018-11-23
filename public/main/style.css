@@ -1,4 +1,5 @@
 /* Fix user-agent */
+@import url(https://fonts.googleapis.com/css?family=Roboto:300);
 
 * {
   box-sizing: border-box;
@@ -46,13 +47,13 @@ ul {
   width: 100%;
 }
 
-/* Login Page */
+/* Room Page */
 
-.login.page {
+.room.page {
   background-color: #000;
 }
 
-.login.page .form {
+.room.page .form {
   height: 100px;
   margin-top: -100px;
   position: absolute;
@@ -62,7 +63,7 @@ ul {
   width: 100%;
 }
 
-.login.page .form .usernameInput {
+.room.page .form .usernameInput {
   background-color: transparent;
   border: none;
   border-bottom: 2px solid #fff;
@@ -72,18 +73,37 @@ ul {
   width: 400px;
 }
 
-.login.page .title {
+.room.page .title {
   font-size: 200%;
 }
 
-.login.page .usernameInput {
+.room.page .usernameInput {
   font-size: 200%;
   letter-spacing: 3px;
 }
 
-.login.page .title, .login.page .usernameInput {
+.room.page .title, .room.page .usernameInput {
   color: #fff;
   font-weight: 100;
+}
+
+.room.page .form button {
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  outline: 0;
+  background: #4CAF50;
+  max-width: 360px;
+  border: 0;
+  padding: 10px;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+}
+
+.room.page .form button:hover,.form button:active,.form button:focus {
+  background: #43A047;
 }
 
 /* Chat page */
