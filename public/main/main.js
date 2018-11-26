@@ -1,10 +1,10 @@
 $(function () {
   var accessToken = JSON.parse(localStorage.accessToken);
-  console.log("accessToken:" + localStorage.accessToken+", token:"+accessToken.data.token);
+  console.log("accessToken:" + localStorage.accessToken + ", token:" + accessToken.data.token);
   $.ajax({
     url: '/rooms/getRooms',
     type: 'get',
-    beforeSend: function(request) {
+    beforeSend: function (request) {
       request.setRequestHeader("token", accessToken.data.token);
     },
     headers: {
@@ -19,7 +19,7 @@ $(function () {
   $.ajax({
     url: '/users/getProfile',
     type: 'get',
-    beforeSend: function(request) {
+    beforeSend: function (request) {
       request.setRequestHeader("token", accessToken.data.token);
     },
     headers: {
@@ -47,7 +47,6 @@ $(function () {
 
   var $roomPage = $('.room.page'); // The login page
   var $chatPage = $('.chat.page'); // The chatroom page
-  var $form = $('.form');
 
   // Prompt for setting a username
   var username;
@@ -55,10 +54,11 @@ $(function () {
   var typing = false;
   var lastTypingTime;
   var $currentInput = $usernameInput.focus();
+  var roomName;
 
   var socket = io();
 
-  $('.room page').on('submit', function (event) {
+  $('.join').on('submit', function (event) {
     event.preventDefault();
     console.log("Click to join room");
   });
@@ -76,7 +76,7 @@ $(function () {
   // Sets the client's username
   const setUsername = () => {
     username = cleanInput($usernameInput.val().trim());
-    
+
     // If the username is valid
     if (username) {
       $roomPage.fadeOut();
@@ -86,6 +86,37 @@ $(function () {
 
       // Tell the server your username
       socket.emit('add user', username);
+    }
+  }
+
+  const addRoomName = () => {
+    roomName = cleanInput($usernameInput.val().trim());
+    console.log("Add Room Name Here");
+    // If the roomName is valid
+    if (roomName) {
+      $.ajax({
+        url: '/rooms/addRoom',
+        type: 'post',
+        beforeSend: function (request) {
+          request.setRequestHeader("token", accessToken.data.token);
+        },
+        data: {
+          "name": roomName
+        },
+        dataType: 'json',
+        success: function (data) {
+          console.info("addRoomName result:::===>" + JSON.stringify(data));
+
+          $roomPage.fadeOut();
+          $chatPage.show();
+          $roomPage.off('click');
+          $currentInput = $inputMessage.focus();
+
+          var userData = JSON.parse(localStorage.userData);
+          var username = userData.data.first_name + " " + userData.data.last_name
+          socket.emit("client__login", username, userData.data.id, roomName)
+        }
+      });
     }
   }
 
@@ -234,12 +265,12 @@ $(function () {
     }
     // When the client hits ENTER on their keyboard
     if (event.which === 13) {
-      if (username) {
+      if (roomName) {
         sendMessage();
         socket.emit('stop typing');
         typing = false;
       } else {
-        setUsername();
+        addRoomName();
       }
     }
   });
@@ -312,11 +343,11 @@ $(function () {
 });
 
 //modify the majors' dropdown
-function updateRoomList(data) { 
-  $("#roomList").empty();//remove all previous majors
-  for(i = 0;i<data.length;i++){ 
-      $("#roomList").append(//add in an option for each major
-          $("<option></option>").attr("value", data[i].id).text(data[i].name)
-      );
+function updateRoomList(data) {
+  $("#roomList").empty(); //remove all previous majors
+  for (i = 0; i < data.length; i++) {
+    $("#roomList").append( //add in an option for each major
+      $("<option></option>").attr("value", data[i].id).text(data[i].name)
+    );
   }
 };
